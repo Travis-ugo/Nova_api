@@ -1,0 +1,66 @@
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: apps/gateway/Dockerfile
+      args:
+        - GATEWAY_PORT=${GATEWAY_PORT}
+        - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+        - ENV_FILE=${ENV_FILE}
+    env_file:
+      - ${ENV_FILE}
+    volumes:
+      - .:/usr/src/server
+    ports:
+      - "${GATEWAY_PORT}:${GATEWAY_PORT}"
+      - 5555:5555
+    command: npx nest start gateway --watch
+    networks:
+      - local
+    depends_on:
+      - database
+  users:
+    env_file:
+      - ${ENV_FILE}
+    build:
+      context: .
+      dockerfile: apps/users/Dockerfile
+      args:
+        - USER_SERVICE_PORT=${USER_SERVICE_PORT}
+        - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+        - ENV_FILE=${ENV_FILE}
+    ports:
+      - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
+
+    volumes:
+      - .:/usr/src/server
+    command: npx nest start users --watch
+    networks:
+      - local
+    depends_on:
+      - database
+  database:
+    container_name: database-1
+    restart: always
+    image: postgres:16.3-alpine
+    env_file:
+      - ${ENV_FILE}
+    healthcheck:
+      test: "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "${DATABASE_PORT}:${DATABASE_PORT}"
+    networks:
+      - local
+    volumes:
+      - ./documentation/db-schema/ddl.sql:/docker-entrypoint-initdb.d/ddl.sql
+
+volumes:
+  database:
+    driver: local
+
+networks:
+  local:
+    driver: bridge

@@ -1,0 +1,351 @@
+openapi: 3.0.0
+info:
+  title: Educational Platform API
+  description: API for managing student courses, lessons, mentors, and tasks.
+
+servers:
+  - url: /api/
+
+paths:
+  /students/{studentId}/courses:
+    get:
+      summary: Get courses (paths) for a student
+      parameters:
+        - name: studentId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of courses for the student
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
+
+  /courses/{courseId}/modules:
+    get:
+      summary: Get modules for a particular course
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of modules in the course
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Module'
+                  
+  /courses/{courseId}/lessons:
+    get:
+      summary: Get lessons for a particular course
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of lessons in the course
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Lesson'
+
+  /courses/{courseId}/sections:
+    get:
+      summary: Get sections for a particular course
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of sections in the course
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Section'
+
+  /courses/{courseId}/mentors:
+    get:
+      summary: Get mentors for a particular course
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of mentors for the course
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Mentor'
+  
+  /courses/{courseId}/levels:
+    get:
+      summary: Get levels for a particular course
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of levels in the course
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CourseLevel'
+  
+  /lessons/{lessonId}/tasks:
+    get:
+      summary: Get tasks for a particular lesson
+      parameters:
+        - name: lessonId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of tasks for the lesson
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+
+  /tasks/{taskId}/options:
+    get:
+      summary: Get options for a particular task
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of options for the task
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskOption'
+                  
+  /subjects:
+    get:
+      summary: Get all subjects
+      responses:
+        '200':
+          description: List of all subjects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Subject'
+                  
+  /classes/{classId}/homeworks:
+    get:
+      summary: Get scheduled lessons of each class. 
+      parameters:
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of scheduled homeworks for the class
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Homework'
+
+components:
+  schemas:
+    Course:
+      type: object
+      properties:
+        courseId:
+          type: string
+        courseName:
+          type: string
+        courseCode:
+          type: string
+        pathLevelId:
+          type: string
+        activeSince:
+          type: string
+          format: date-time
+      required:
+        - courseId
+        - courseName
+        - courseCode
+        - pathLevelId
+    Module:
+      type: object
+      properties:
+        moduleId:
+          type: string
+        moduleName:
+          type: string
+        moduleDescription:
+          type: string
+      required:
+        - moduleId
+        - moduleName
+    Section:
+      type: object
+      properties:
+        sectionId:
+          type: string
+        sectionName:
+          type: string
+        sectionDescription:
+          type: string
+      required:
+        - sectionId
+        - sectionName
+    Mentor:
+      type: object
+      properties:
+        mentorId:
+          type: string
+        mentorFullName:
+          type: string
+        mentorDescription:
+          type: string
+      required:
+        - mentorId
+        - mentorFullName
+    Lesson:
+      type: object
+      properties:
+        lessonId:
+          type: string
+        lessonName:
+          type: string
+        lessonDescription:
+          type: string
+        lessonDuration:
+          type: integer
+          description: Duration of the lesson in minutes
+      required:
+        - lessonId
+        - lessonName
+    Task:
+      type: object
+      properties:
+        taskId:
+          type: string
+        taskName:
+          type: string
+        taskDescription:
+          type: string
+        taskTypeId:
+          type: string
+      required:
+        - taskId
+        - taskName
+        - taskDescription
+    TaskOption:
+      type: object
+      properties:
+        optionId:
+          type: string
+        optionText:
+          type: string
+        isCorrect:
+          type: boolean
+      required:
+        - optionId
+        - optionText
+    Subject:
+      type: object
+      properties:
+        subjectId:
+          type: string
+        subjectCode:
+          type: string
+        subjectName:
+          type: string
+      required:
+        - subjectId
+        - subjectCode
+        - subjectName
+        
+    CourseLevel:
+      type: object
+      properties:
+        levelId:
+          type: string
+        levelName:
+          type: string
+        levelDescription:
+          type: string
+      required:
+        - levelId
+        - levelName
+        
+    Homework:
+      type: object
+      properties:
+        homeworkId:
+          type: string
+          description: Unique identifier for the homework
+        title:
+          type: string
+          description: Title of the homework
+        description:
+          type: string
+          description: Detailed description of the homework
+        dueDate:
+          type: string
+          format: date-time
+          description: Due date and time for the homework
+        classId:
+          type: string
+          description: Identifier for the class to which the homework is assigned
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation date and time of the homework
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update date and time of the homework
+      required:
+        - homeworkId
+        - title
+        - dueDate
+        - classId
